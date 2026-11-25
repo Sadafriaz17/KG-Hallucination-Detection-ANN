@@ -79,7 +79,8 @@ KG-Hallucination-Detection-ANN/
 │   │   └── source_agent.py
 │   └── factual_verification/    # Factual Verification Agent (Member 1)
 │       ├── __init__.py
-│       └── factual_agent.py
+│       ├── factual_agent.py
+│       └── AGENT_README.md
 │
 ├── outputs/
 │   ├── source_verification/     # Agent output files (auto-generated)
@@ -130,11 +131,11 @@ KG-Hallucination-Detection-ANN/
 | Component | Status |
 |-----------|--------|
 | Project folder structure | ✅ Complete |
-| Dataset files (headers) | ✅ Created (empty — to be populated) |
-| Source Verification Agent | 🔲 Placeholder only |
-| Factual Verification Agent | 🔲 Placeholder only |
+| Pilot dataset | ✅ Populated (80 triples; suitable for pipeline testing) |
+| Source Verification Agent | ✅ Implemented and tested |
+| Factual Verification Agent | ✅ Implemented and tested (Wikidata-backed) |
 | Graph Consistency Agent | 🔲 Not started (Member 2) |
-| Data utilities | 🔲 Placeholder only |
+| Data utilities | ✅ Implemented |
 | ANN model | 🔲 Not started (Member 2) |
 | Evaluation | 🔲 Not started (Member 2) |
 
@@ -157,18 +158,44 @@ source .venv/bin/activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configure environment variables
+# 4. Optionally configure the Wikidata user-agent
 cp .env.example .env
-# Edit .env and add your API keys (never commit .env)
+# No API key is required; set WIKIDATA_USER_AGENT if desired.
 ```
 
 ---
 
+## Agent Integration
+
+The Source Verification Agent and Factual Verification Agent accept the same
+triple records and return the shared fields `triple_id`, `verdict`,
+`confidence`, `evidence`, and `explanation`. Their verdicts answer different
+questions and must remain separate when joined by `triple_id`. The factual
+agent additionally returns `evidence_source`; the source agent returns
+`source_document_id`. See
+[agents/factual_verification/AGENT_README.md](agents/factual_verification/AGENT_README.md)
+for usage, status semantics, and limitations.
+
+## Interactive Knowledge Graph
+
+The separate Member 1 visualization reads `dataset/triples.csv` and writes
+`visualization/knowledge_graph.html`. Install project dependencies with
+`pip install -r requirements.txt`, then run:
+
+```bash
+python -m visualization.visualize_kg
+```
+
+Open the generated HTML file in a browser. Nodes can be dragged, the graph can
+be zoomed and explored by hover, and the built-in filter menu can filter edges
+by their relation. See [visualization/README.md](visualization/README.md).
+
 ## Development Rules
 
 - **Python only.** Modular, readable, well-documented code.
-- **No real API keys** in the repository. Use `.env` and `.env.example`.
+- **No paid APIs or hardcoded API keys.** The current factual agent uses the public Wikidata API.
 - **No fabricated data.** Only populate CSVs with verified, real entries.
+- **Ground truth must be annotated independently**, not generated from agent predictions.
 - **No cross-member scope creep.** Member 1 does not implement the ANN or Graph Consistency Agent.
 - Commit messages should be descriptive and reference the component changed.
 

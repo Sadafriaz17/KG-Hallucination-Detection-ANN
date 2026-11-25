@@ -14,7 +14,6 @@ Usage:
     print(cfg.DATASET_DIR)
 """
 
-import os
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -28,8 +27,8 @@ class Config:
     Central configuration object.
 
     All paths are absolute and resolved from the project root.
-    API key names reference environment variable names; the actual
-    values must be set in the .env file (never committed to git).
+    External service settings reference environment variable names; optional
+    values may be set in the .env file (never committed to git).
     """
 
     # -----------------------------------------------------------------------
@@ -48,16 +47,10 @@ class Config:
     FACTUAL_VERIFICATION_OUTPUT_DIR: Path = OUTPUTS_DIR / "factual_verification"
 
     # -----------------------------------------------------------------------
-    # Environment variable names for external API keys
-    # (Load actual values from .env at runtime — never hardcode here.)
+    # Environment variable names for optional external service settings.
     # -----------------------------------------------------------------------
-    # Example:
-    #   OPENAI_API_KEY_ENV: str = "OPENAI_API_KEY"
-    #   WIKIDATA_API_KEY_ENV: str = "WIKIDATA_API_KEY"
-    #
-    # To use:
-    #   api_key = os.getenv(Config.OPENAI_API_KEY_ENV)
     # -----------------------------------------------------------------------
+    WIKIDATA_USER_AGENT_ENV: str = "WIKIDATA_USER_AGENT"
 
     # -----------------------------------------------------------------------
     # Label definitions
@@ -76,8 +69,8 @@ class Config:
     )
 
     FACTUAL_VERDICTS: tuple = (
-        "TRUE",
-        "FALSE",
-        "UNKNOWN",
+        "FACTUALLY_CORRECT",
+        "FACTUALLY_INCORRECT",
+        "INSUFFICIENT_EVIDENCE",
     )
 

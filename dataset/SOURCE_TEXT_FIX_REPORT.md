@@ -1,5 +1,13 @@
 # Source Text Fix Report
 
+> **Clarification (2026-11-25):** “Verbatim” below means character-for-character
+> matches between `triples.csv` and the local curated `.txt` files. Those local
+> files are manually prepared summaries and have not been verified as verbatim
+> quotations from their linked Wikipedia articles. The Source Verification
+> Agent reads the complete local file, not the complete external article.
+> Current status and ground-truth decisions are documented in
+> [`MEMBER1_REAUDIT.md`](./MEMBER1_REAUDIT.md).
+
 **Project:** Multi-Agent Knowledge Graph Hallucination Detection Using an ANN  
 **Fix date:** 2026-11-25  
 **Addresses audit finding:** Issue #1 from `DATASET_AUDIT_REPORT.md`  

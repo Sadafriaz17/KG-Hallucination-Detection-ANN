@@ -18,10 +18,10 @@ For each triple the agent:
   4.  Scores every sentence for relevance to (subject, relation) using
       keyword matching and term-overlap heuristics.
   5.  From the top-ranked relevant sentences, determines one verdict:
-        - SUPPORTED     : at least one relevant sentence contains the object.
-        - CONTRADICTED  : relevant sentences exist but none contains the object
-                          (the source associates the subject+relation with a
-                          different value).
+        - SUPPORTED     : a relevant sentence contains the object as a
+                          standalone entity phrase and does not negate it.
+        - CONTRADICTED  : the source explicitly denies the object or gives
+                          another value in a simple relation-value sentence.
         - NOT_MENTIONED : no relevant sentences were found at all.
   6.  Assigns a confidence score based on evidence strength.
   7.  Returns a ``SourceVerificationResult`` dataclass that serialises to JSON.
@@ -36,10 +36,11 @@ Design constraints honoured
 
 Confidence calibration
 ----------------------
-  SUPPORTED (exact object in relevant sentence)   : 0.95
-  SUPPORTED (partial / case-folded object match)  : 0.80
-  CONTRADICTED (relevant sentence, object absent) : 0.90
-  NOT_MENTIONED (no relevant sentences found)     : 0.80
+  SUPPORTED (object phrase in top relevant sentence) : 0.95
+  SUPPORTED (object phrase in another relevant sentence): 0.80
+  CONTRADICTED (explicit denial or alternative value): 0.90
+  NOT_MENTIONED (relation discussed, answer unclear) : 0.60
+  NOT_MENTIONED (no relevant sentences found)        : 0.80
 
 Outputs
 -------
@@ -257,6 +258,7 @@ class SourceVerificationAgent:
             evidence, and explanation.
 
         Raises:
+            TypeError: If ``triple`` is not a dict.
             ValueError: If the triple is missing required keys or contains
                 empty values for mandatory fields.
             FileNotFoundError: If the referenced source document does not
@@ -298,7 +300,7 @@ class SourceVerificationAgent:
 
     def run_batch(
         self,
-        triples: List[Dict[str, str]],
+        triples: List[object],
         *,
         save: bool = True,
         filename: Optional[str] = None,
@@ -307,11 +309,12 @@ class SourceVerificationAgent:
         Verify a list of triples and optionally save results to disk.
 
         Processing is sequential; each triple is verified independently.
-        Triples that raise an error are recorded with a special
-        ``ERROR`` verdict so that the batch does not abort.
+        Invalid triples are recorded as ``NOT_MENTIONED`` with zero
+        confidence and an explicit ``[AGENT ERROR]`` explanation, preserving
+        the established verdict schema while allowing later items to run.
 
         Args:
-            triples (List[Dict[str, str]]): List of triple dicts.
+            triples (List[object]): List of triple dicts, possibly malformed.
             save (bool): If True (default), write results to
                 ``outputs/source_verification/`` as a JSON file.
             filename (str, optional): Override the auto-generated output
@@ -319,23 +322,31 @@ class SourceVerificationAgent:
 
         Returns:
             List[SourceVerificationResult]: One result per input triple,
-            in the same order.  Failed triples carry verdict ``"ERROR"``.
+            in the same order.
         """
         results: List[SourceVerificationResult] = []
 
         for triple in triples:
             try:
                 result = self.verify(triple)
-            except (ValueError, FileNotFoundError) as exc:
+            except (TypeError, ValueError, FileNotFoundError) as exc:
                 # Produce an error result instead of crashing the batch.
-                tid = triple.get("triple_id", "UNKNOWN")
+                tid = "UNKNOWN"
+                source_document_id = ""
+                if isinstance(triple, dict):
+                    candidate_id = triple.get("triple_id")
+                    candidate_document_id = triple.get("source_document_id")
+                    if isinstance(candidate_id, str) and candidate_id.strip():
+                        tid = candidate_id.strip()
+                    if isinstance(candidate_document_id, str):
+                        source_document_id = candidate_document_id.strip()
                 result = SourceVerificationResult(
                     triple_id=tid,
                     verdict="NOT_MENTIONED",   # safest fallback for downstream
                     confidence=0.0,
                     evidence="",
                     explanation=f"[AGENT ERROR] {type(exc).__name__}: {exc}",
-                    source_document_id=triple.get("source_document_id", ""),
+                    source_document_id=source_document_id,
                 )
             results.append(result)
 
@@ -442,9 +453,16 @@ class SourceVerificationAgent:
         Returns:
             List[str]: List of lowercased search terms.
         """
-        base_terms = [relation.lower()]
-        synonyms   = [t.lower() for t in self.RELATION_KEYWORDS.get(relation, [])]
-        return base_terms + synonyms
+        base_terms = [relation.casefold()]
+        synonyms = next(
+            (
+                terms
+                for name, terms in self.RELATION_KEYWORDS.items()
+                if name.casefold() == relation.casefold()
+            ),
+            [],
+        )
+        return base_terms + [term.casefold() for term in synonyms]
 
     def _score_sentence_relevance(
         self,
@@ -467,14 +485,13 @@ class SourceVerificationAgent:
         Returns:
             float: Relevance score (higher = more relevant).
         """
-        sent_lower = sentence.lower()
         score = 0.0
 
-        if subject.lower() in sent_lower:
+        if self._contains_phrase(subject, sentence, entity=True):
             score += 2.0
 
         for term in relation_terms:
-            if term in sent_lower:
+            if self._contains_phrase(term, sentence):
                 score += 1.0
 
         return score
@@ -522,6 +539,34 @@ class SourceVerificationAgent:
     # Private — verdict logic
     # ==================================================================
 
+    def _contains_phrase(
+        self, phrase: str, sentence: str, *, entity: bool = False
+    ) -> bool:
+        """Match a phrase without matching word fragments or partial names."""
+        phrase = phrase.strip()
+        if not phrase:
+            return False
+        pattern = re.compile(
+            rf"(?<!\w){re.escape(phrase)}(?!\w)",
+            flags=re.IGNORECASE | re.UNICODE,
+        )
+        for match in pattern.finditer(sentence):
+            if entity and len(phrase.split()) == 1:
+                before = sentence[:match.start()].rstrip()
+                after = sentence[match.end():]
+                previous_word = re.search(r"([\w]+)$", before, re.UNICODE)
+                next_word = re.match(r"\s+([\w]+)", after, re.UNICODE)
+                if (
+                    previous_word
+                    and previous_word.group(1)[0].isupper()
+                ) or (
+                    next_word
+                    and next_word.group(1)[0].isupper()
+                ):
+                    continue
+            return True
+        return False
+
     def _object_in_sentence(self, object_value: str, sentence: str) -> bool:
         """
         Case-insensitive check whether the object appears in a sentence.
@@ -535,7 +580,71 @@ class SourceVerificationAgent:
         Returns:
             bool: True if the object is found (case-insensitive).
         """
-        return object_value.strip().lower() in sentence.lower()
+        return self._contains_phrase(object_value, sentence, entity=True)
+
+    @staticmethod
+    def _object_is_negated(object_value: str, sentence: str) -> bool:
+        """Detect direct English negation immediately before an object phrase."""
+        phrase = re.escape(object_value.strip())
+        if not phrase:
+            return False
+        pattern = re.compile(
+            rf"\b(?:not|never|no|isn't|aren't|wasn't|weren't)\s+"
+            rf"(?:(?:the|a|an)\s+)?{phrase}(?!\w)",
+            flags=re.IGNORECASE | re.UNICODE,
+        )
+        return pattern.search(sentence) is not None
+
+    def _has_explicit_alternative_value(
+        self, sentence: str, subject: str, relation: str
+    ) -> bool:
+        """Recognize simple subject/relation/copula/value statements."""
+        subject_pattern = re.compile(
+            rf"(?<!\w){re.escape(subject.strip())}(?!\w)",
+            flags=re.IGNORECASE | re.UNICODE,
+        )
+        copula_pattern = re.compile(
+            r"\b(?:is|are|was|were)\b", flags=re.IGNORECASE
+        )
+        uncertain_values = {
+            "disputed",
+            "unclear",
+            "unknown",
+            "uncertain",
+            "undetermined",
+            "not established",
+            "not specified",
+            "not known",
+        }
+        relation_terms = self._get_relation_terms(relation)
+        subject_matches = list(subject_pattern.finditer(sentence))
+        relation_matches = [
+            match
+            for term in relation_terms
+            for match in re.finditer(
+                rf"(?<!\w){re.escape(term)}(?!\w)",
+                sentence,
+                flags=re.IGNORECASE | re.UNICODE,
+            )
+        ]
+        for subject_match in subject_matches:
+            for relation_match in relation_matches:
+                statement_end = max(subject_match.end(), relation_match.end())
+                copula = copula_pattern.search(sentence, statement_end)
+                if copula is None:
+                    continue
+                value = re.split(r"[,;.!?]", sentence[copula.end():], maxsplit=1)[0]
+                value = re.sub(r"^\s*(?:the|a|an)\s+", "", value.strip(), flags=re.IGNORECASE)
+                value = " ".join(value.split())
+                if (
+                    value
+                    and value.casefold() not in uncertain_values
+                    and not value.casefold().startswith(
+                        ("not ", "no ", "never ")
+                    )
+                ):
+                    return True
+        return False
 
     def _determine_verdict(
         self,
@@ -553,9 +662,8 @@ class SourceVerificationAgent:
         2. Object found in a relevant sentence → SUPPORTED.
            - Confidence 0.95 if the highest-scoring sentence contains it.
            - Confidence 0.80 if only a lower-ranked sentence contains it.
-        3. Relevant sentences found but object absent → CONTRADICTED (0.90).
-           The source discusses subject+relation but associates it with a
-           different value.
+        3. A direct denial or explicit alternative value → CONTRADICTED (0.90).
+        4. Relation mentioned but no explicit answer → NOT_MENTIONED (0.60).
 
         Args:
             relevant_sentences (List[str]): Ranked relevant sentences.
@@ -579,7 +687,10 @@ class SourceVerificationAgent:
         # ── Case 2: check for SUPPORTED ────────────────────────────────
         # Walk sentences in rank order; first hit gets highest confidence.
         for rank, sentence in enumerate(relevant_sentences):
-            if self._object_in_sentence(object_value, sentence):
+            if (
+                self._object_in_sentence(object_value, sentence)
+                and not self._object_is_negated(object_value, sentence)
+            ):
                 confidence = 0.95 if rank == 0 else 0.80
                 explanation = (
                     f"The source document explicitly states '{sentence}', "
@@ -588,18 +699,35 @@ class SourceVerificationAgent:
                 )
                 return "SUPPORTED", confidence, sentence, explanation
 
-        # ── Case 3: relevant sentences exist but object absent ──────────
-        # The source document discusses subject+relation but provides a
-        # different value → CONTRADICTED.
+        # A negated object is direct evidence against the queried claim.
+        for sentence in relevant_sentences:
+            if self._object_is_negated(object_value, sentence):
+                explanation = (
+                    f"The source document explicitly negates "
+                    f"'{object_value}' in its discussion of "
+                    f"'{subject}' and '{relation}'."
+                )
+                return "CONTRADICTED", 0.90, sentence, explanation
+
+        # Only treat a mismatch as contradiction when a simple statement
+        # explicitly supplies another value; mere topical overlap is not enough.
+        for sentence in relevant_sentences:
+            if self._has_explicit_alternative_value(sentence, subject, relation):
+                explanation = (
+                    f"The source document states an alternative value for "
+                    f"'{subject}' and '{relation}' in: \"{sentence}\"."
+                )
+                return "CONTRADICTED", 0.90, sentence, explanation
+
+        # Relation was mentioned, but the available wording does not establish
+        # either the queried object or a contradictory value.
         best_sentence = relevant_sentences[0]
         explanation = (
-            f"The source document addresses '{subject}' and '{relation}' "
-            f"(best matching sentence: \"{best_sentence}\"), "
-            f"but it does not contain '{object_value}'. "
-            f"The source associates '{subject}' with a different "
-            f"'{relation}' value, contradicting this triple."
+            f"The source document mentions '{subject}' and '{relation}' "
+            f"(best matching sentence: \"{best_sentence}\"), but it does not "
+            f"establish '{object_value}' or an alternative value."
         )
-        return "CONTRADICTED", 0.90, best_sentence, explanation
+        return "NOT_MENTIONED", 0.60, "", explanation
 
     # ==================================================================
     # Private — validation

@@ -13,8 +13,8 @@ The Source Verification Agent determines whether a Knowledge Graph triple is:
 | Verdict | Meaning |
 |---------|---------|
 | `SUPPORTED` | The source document contains a sentence that explicitly confirms the triple. |
-| `CONTRADICTED` | The source document discusses the same (subject, relation) but associates it with a different value. |
-| `NOT_MENTIONED` | The source document contains no relevant information about the (subject, relation) pair. |
+| `CONTRADICTED` | A relevant source sentence explicitly denies the object or gives another value in a simple relation-value statement. |
+| `NOT_MENTIONED` | The source does not establish the object or an explicit alternative. This includes ambiguous topical mentions. |
 
 The agent operates **independently**: it never reads `ground_truth.csv` or the Factual Verification Agent's output.
 
@@ -28,19 +28,24 @@ verify(triple):
   2. Load the full source document from disk using source_document_id.
   3. Strip preamble / metadata lines from the document.
   4. Split remaining text into individual sentences.
-  5. Score each sentence for relevance to (subject, relation):
+  5. Match subject and relation terms with word boundaries; single-word entity
+     matches embedded in capitalized multi-word names are not accepted.
+  6. Score each sentence for relevance to (subject, relation):
        score += 2.0  if subject appears in sentence
        score += 1.0  per relation keyword that appears in sentence
-  6. Keep sentences scoring ≥ 3.0 (subject AND at least one relation term).
-  7. Apply verdict logic:
-       - Object found in a relevant sentence  → SUPPORTED
-       - Relevant sentences exist, object absent → CONTRADICTED
-       - No relevant sentences at all         → NOT_MENTIONED
-  8. Return SourceVerificationResult dataclass.
+  7. Keep sentences scoring ≥ 3.0 (subject AND at least one relation term).
+  8. Return SUPPORTED only when the object is not directly negated.
+  9. Return CONTRADICTED only for a direct denial or explicit alternative
+     value; otherwise return NOT_MENTIONED.
+ 10. Return SourceVerificationResult dataclass.
 ```
 
 > [!NOTE]
-> The `source_text` field from `triples.csv` is **not** used for the verdict decision. The agent always reads the complete source document. `source_text` is only referenced in explanations when it is non-empty.
+> The `source_text` field from `triples.csv` is **not** used for the verdict
+> decision. The agent reads the complete local file named by
+> `source_document_id`. Those local files are curated summaries, not full
+> downloads of the linked articles, so “full document” means the full local
+> text file—not the full external web page.
 
 ---
 
@@ -122,7 +127,7 @@ for r in results[:5]:
 pytest tests/test_source_agent.py -v
 ```
 
-Expected output: **31 passed**.
+Run the current source-agent tests with `python -m pytest tests/test_source_agent.py -q`.
 
 ---
 
@@ -164,7 +169,8 @@ Batch output is saved to `outputs/source_verification/` as a JSON file containin
 |----------|-----------|
 | Object found in highest-scoring relevant sentence | 0.95 |
 | Object found in a lower-ranked relevant sentence | 0.80 |
-| Relevant sentence(s) found but object absent (CONTRADICTED) | 0.90 |
+| Explicit denial or simple alternative value (CONTRADICTED) | 0.90 |
+| Relevant but ambiguous mention (NOT_MENTIONED) | 0.60 |
 | No relevant sentences found (NOT_MENTIONED) | 0.80 |
 | Agent error during batch (graceful fallback) | 0.00 |
 
@@ -176,8 +182,11 @@ Confidence reflects **strength of source evidence**, not factual belief.
 
 1. Uses keyword-based sentence matching — no semantic embeddings or BM25.
 2. Can misclassify if the source document uses uncommon synonyms for the relation.
-3. NOT_MENTIONED confidence (0.80) could be higher for very short documents.
-4. Does not handle negation (e.g., "X is NOT the capital of Y").
+3. Contradiction detection only recognizes direct negation and simple
+   subject/relation/copula/value wording; more complex syntax remains
+   inconclusive or may be misclassified.
+4. The single-word proper-name guard is heuristic and is not named-entity
+   recognition.
 
 These limitations are acceptable for the pilot dataset. See `IMPLEMENTATION_REPORT.md` for upgrade paths.
 

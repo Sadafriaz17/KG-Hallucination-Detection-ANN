@@ -1,5 +1,12 @@
 # Source Verification Agent — Implementation Report
 
+> **Historical implementation report.** This report documents the initial
+> source-agent implementation and its original 31-test baseline. The agent has
+> since received focused batch/matching fixes, and the factual agent and
+> dataset audit are now implemented. See
+> [`dataset/MEMBER1_REAUDIT.md`](dataset/MEMBER1_REAUDIT.md) and the current
+> [source-agent guide](agents/source_verification/AGENT_README.md).
+
 **Project:** Multi-Agent Knowledge Graph Hallucination Detection Using an ANN  
 **Component:** Source Verification Agent (Member 1)  
 **Implementation date:** 2026-11-25  

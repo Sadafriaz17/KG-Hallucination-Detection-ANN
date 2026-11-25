@@ -1,3 +1,13 @@
+# Historical Dataset Audit Report — Superseded
+
+> **This report describes the pre-audit state and is retained for history only.**
+> Its balanced-label and unverified-reference findings are outdated. The
+> current dataset audit, ground-truth changes, source-document limitations,
+> and verification-output contracts are in
+> [`MEMBER1_REAUDIT.md`](./MEMBER1_REAUDIT.md).
+
+---
+
 # Dataset Audit Report
 **Project:** Multi-Agent Knowledge Graph Hallucination Detection Using an ANN  
 **Auditor:** Member 1 (automated + manual review)  

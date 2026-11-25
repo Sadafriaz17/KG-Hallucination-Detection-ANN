@@ -13,6 +13,10 @@ pandas
 # Testing
 pytest
 
+# Interactive Knowledge Graph visualization (Member 1)
+networkx>=3.0,<4.0
+pyvis>=0.3.2,<1.0
+
 # ---------------------------------------------------------------------------
 # Source Verification Agent (implemented)
 # ---------------------------------------------------------------------------
@@ -29,7 +33,7 @@ pytest
 # SPARQLWrapper     # Wikidata SPARQL endpoint
 #
 # --- Graph Consistency Agent (Member 2) ---
-# networkx          # KG graph operations
+# Additional dependencies, if any, are owned by Member 2.
 #
 # --- ANN model (Member 2) ---
 # torch             # or tensorflow

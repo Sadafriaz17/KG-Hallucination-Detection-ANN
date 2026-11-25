@@ -288,6 +288,60 @@ class TestContradicted:
         assert result.verdict == "CONTRADICTED"
         assert result.evidence != ""
 
+    def test_partial_entity_word_is_not_treated_as_a_match(
+        self, synthetic_agent
+    ):
+        triple = _make_triple(
+            triple_id="SYN-PARTIAL",
+            subject="Acme Corp",
+            relation="Headquarters",
+            obj="field",
+            source_document_id="source_synth",
+        )
+
+        result = synthetic_agent.verify(triple)
+
+        assert result.verdict == "CONTRADICTED"
+        assert "Springfield" in result.evidence
+
+    def test_partial_multiword_entity_is_not_treated_as_a_match(self, agent):
+        triple = _make_triple(
+            triple_id="T0201-PARTIAL",
+            subject="India",
+            relation="Capital",
+            obj="Delhi",
+            source_document_id="source_02",
+        )
+
+        result = agent.verify(triple)
+
+        assert result.verdict == "CONTRADICTED"
+        assert "New Delhi" in result.evidence
+
+    def test_negated_object_is_not_treated_as_supported(self, tmp_path):
+        docs_dir = tmp_path / "source_documents"
+        docs_dir.mkdir()
+        (docs_dir / "source_negated.txt").write_text(
+            "The capital of Acme Corp is not Springfield.",
+            encoding="utf-8",
+        )
+        agent = SourceVerificationAgent(
+            source_documents_dir=docs_dir,
+            output_dir=tmp_path / "outputs",
+        )
+        triple = _make_triple(
+            triple_id="SYN-NEGATED",
+            subject="Acme Corp",
+            relation="Capital",
+            obj="Springfield",
+            source_document_id="source_negated",
+        )
+
+        result = agent.verify(triple)
+
+        assert result.verdict == "CONTRADICTED"
+        assert "not Springfield" in result.evidence
+
 
 # ===========================================================================
 # TC-05  NOT_MENTIONED — claim absent from source
@@ -354,6 +408,45 @@ class TestNotMentioned:
         result = synthetic_agent.verify(triple)
         assert result.verdict == "NOT_MENTIONED"
         assert result.evidence == ""
+
+    def test_ambiguous_value_is_not_reported_as_contradiction(self, tmp_path):
+        docs_dir = tmp_path / "source_documents"
+        docs_dir.mkdir()
+        (docs_dir / "source_ambiguous.txt").write_text(
+            "The capital of Acme Corp is disputed.",
+            encoding="utf-8",
+        )
+        agent = SourceVerificationAgent(
+            source_documents_dir=docs_dir,
+            output_dir=tmp_path / "outputs",
+        )
+        triple = _make_triple(
+            triple_id="SYN-AMBIGUOUS",
+            subject="Acme Corp",
+            relation="Capital",
+            obj="Springfield",
+            source_document_id="source_ambiguous",
+        )
+
+        result = agent.verify(triple)
+
+        assert result.verdict == "NOT_MENTIONED"
+        assert result.confidence == 0.6
+        assert result.evidence == ""
+        assert "does not establish" in result.explanation
+
+    def test_subject_fragment_does_not_match_entity_name(self, synthetic_agent):
+        triple = _make_triple(
+            triple_id="SYN-SUBJECT-FRAGMENT",
+            subject="Acm",
+            relation="Headquarters",
+            obj="Springfield",
+            source_document_id="source_synth",
+        )
+
+        result = synthetic_agent.verify(triple)
+
+        assert result.verdict == "NOT_MENTIONED"
 
 
 # ===========================================================================
@@ -459,6 +552,30 @@ class TestMissingDocument:
         assert results[1].confidence == 0.0
         assert "ERROR" in results[1].explanation or \
                "error" in results[1].explanation.lower()
+
+    def test_malformed_batch_items_do_not_abort_valid_items(self, agent):
+        valid = _make_triple(
+            triple_id="T0101",
+            subject="Pakistan",
+            relation="Capital",
+            obj="Islamabad",
+            source_document_id="source_01",
+        )
+        missing_field = {
+            "triple_id": "BAD-FIELD",
+            "subject": "Pakistan",
+            "relation": "Capital",
+            "object": "Islamabad",
+        }
+
+        results = agent.run_batch([["not", "a", "triple"], missing_field, valid], save=False)
+
+        assert len(results) == 3
+        assert results[0].triple_id == "UNKNOWN"
+        assert results[1].triple_id == "BAD-FIELD"
+        assert all(result.confidence == 0.0 for result in results[:2])
+        assert all("[AGENT ERROR]" in result.explanation for result in results[:2])
+        assert results[2].verdict == "SUPPORTED"
 
 
 # ===========================================================================

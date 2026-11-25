@@ -11,10 +11,28 @@
     "NOT_MENTIONED"
   ],
   "factual_verdicts": [
-    "TRUE",
-    "FALSE",
-    "UNKNOWN"
+    "FACTUALLY_CORRECT",
+    "FACTUALLY_INCORRECT",
+    "INSUFFICIENT_EVIDENCE"
   ],
+  "agent_output_common_fields": [
+    "triple_id",
+    "verdict",
+    "confidence",
+    "evidence",
+    "explanation"
+  ],
+  "factual_evidence_field": "evidence_source",
+  "label_distribution": {
+    "SOURCE_SUPPORTED": 20,
+    "TRUE_BUT_SOURCE_UNSUPPORTED": 18,
+    "FACTUALLY_INCORRECT": 22,
+    "INSUFFICIENT_EVIDENCE": 20
+  },
+  "relation_definitions": {
+    "Largest city": "The top-listed entity in the archived CIA World Factbook 2025-labelled edition's Major urban areas - population field (2023 estimates); this is not a city-proper or standardized metropolitan-area definition.",
+    "Continent": "The seven-continent model, assigned by the country's principal territory; overseas territories are excluded."
+  },
   "source_text_semantics": "The verbatim sentence(s) extracted from the source document that are most relevant to verifying this triple. Empty string when the claim is not mentioned in the source excerpt. This field is a retrieval aid for the Source Verification Agent; the agent must always read the full source document via source_document_id and determine its own SUPPORTED / CONTRADICTED / NOT_MENTIONED verdict independently.",
-  "note": "Provisional pilot schema; agree with Member 2 before implementation. source_text updated 2026-11-25 (see dataset/SOURCE_TEXT_FIX_REPORT.md)."
+  "note": "Pilot schema. Source and factual agents share common output fields; factual results additionally include evidence_source. source_text updated 2026-11-25 (see dataset/SOURCE_TEXT_FIX_REPORT.md). Ground truth re-audited 2026-11-25; see dataset/MEMBER1_REAUDIT.md."
 }

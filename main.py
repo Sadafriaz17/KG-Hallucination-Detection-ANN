@@ -52,9 +52,10 @@ Step 7 — Evaluation  (Member 2)
 CURRENT STATUS
 =============================================================================
 
-  Initial project structure created.
-  Agents and ANN are NOT yet implemented.
-  Do not run this file until implementation is complete.
+  Source and factual verification agents are implemented.
+  Graph consistency, orchestration, feature extraction, ANN, and evaluation
+  remain pending. This entry point stays a placeholder until those components
+  are integrated.
 
 =============================================================================
 """
@@ -65,7 +66,7 @@ def main():
     Main entry point for the hallucination detection pipeline.
 
     This function will orchestrate the full multi-agent pipeline
-    once all components (agents, ANN model) are implemented.
+    once the remaining agents, orchestrator, and ANN are implemented.
 
     Currently raises NotImplementedError as a reminder that
     implementation is pending.
