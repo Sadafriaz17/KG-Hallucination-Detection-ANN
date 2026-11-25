@@ -1,0 +1,37 @@
+# Requirements
+# ============================================================
+# Keep this file minimal; add packages only when their
+# implementation is ready and tested.
+# ============================================================
+
+# Environment variable loading
+python-dotenv
+
+# Data handling
+pandas
+
+# Testing
+pytest
+
+# ---------------------------------------------------------------------------
+# Source Verification Agent (implemented)
+# ---------------------------------------------------------------------------
+# No new packages required.
+# The agent uses only Python standard-library modules:
+#   csv, json, re, dataclasses, pathlib, datetime, sys
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Add packages below as each component is implemented, for example:
+#
+# --- Factual Verification Agent ---
+# requests          # HTTP calls to Wikidata / Wikipedia REST API
+# SPARQLWrapper     # Wikidata SPARQL endpoint
+#
+# --- Graph Consistency Agent (Member 2) ---
+# networkx          # KG graph operations
+#
+# --- ANN model (Member 2) ---
+# torch             # or tensorflow
+# scikit-learn      # feature engineering + evaluation metrics
+# ---------------------------------------------------------------------------

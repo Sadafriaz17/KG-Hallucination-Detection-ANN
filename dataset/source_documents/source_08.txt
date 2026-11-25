@@ -1,0 +1,20 @@
+CURATED SOURCE EXCERPT: Canada
+Dataset document ID: source_08
+Original source page: https://en.wikipedia.org/wiki/Canada
+Retrieved/prepared: 2026-11-25
+
+This is a short, manually prepared excerpt for a small course-project prototype.
+It is NOT a complete copy of the linked article. Only the two facts below are
+intentionally included as evidence in this source document.
+
+1. The capital city of Canada is Ottawa.
+2. The currency used in Canada is the Canadian dollar.
+
+Source attribution: Country overview information from the linked Wikipedia article.
+For academic use, check the linked article and its cited references, record the
+actual retrieval date, and replace this curated excerpt with a verbatim excerpt
+if your instructor requires exact source quotations.
+
+Dataset design note:
+Other true facts may be deliberately omitted from this short excerpt. Therefore,
+a claim can be factually true while remaining unsupported by THIS source excerpt.

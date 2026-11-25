@@ -1,0 +1,20 @@
+{
+  "final_labels": [
+    "SOURCE_SUPPORTED",
+    "TRUE_BUT_SOURCE_UNSUPPORTED",
+    "FACTUALLY_INCORRECT",
+    "INSUFFICIENT_EVIDENCE"
+  ],
+  "source_verdicts": [
+    "SUPPORTED",
+    "CONTRADICTED",
+    "NOT_MENTIONED"
+  ],
+  "factual_verdicts": [
+    "TRUE",
+    "FALSE",
+    "UNKNOWN"
+  ],
+  "source_text_semantics": "The verbatim sentence(s) extracted from the source document that are most relevant to verifying this triple. Empty string when the claim is not mentioned in the source excerpt. This field is a retrieval aid for the Source Verification Agent; the agent must always read the full source document via source_document_id and determine its own SUPPORTED / CONTRADICTED / NOT_MENTIONED verdict independently.",
+  "note": "Provisional pilot schema; agree with Member 2 before implementation. source_text updated 2026-11-25 (see dataset/SOURCE_TEXT_FIX_REPORT.md)."
+}

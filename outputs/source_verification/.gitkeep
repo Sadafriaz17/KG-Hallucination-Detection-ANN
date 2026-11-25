@@ -1,0 +1,4 @@
+# This file ensures the outputs/source_verification/ directory is tracked
+# by git even when it is otherwise empty.
+# Auto-generated result files (*.json) in this directory are git-ignored.
+

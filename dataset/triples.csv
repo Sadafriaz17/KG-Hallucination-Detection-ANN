@@ -1,0 +1,81 @@
+triple_id,subject,relation,object,source_document_id,source_document_url,source_text
+T0101,Pakistan,Capital,Islamabad,source_01,https://en.wikipedia.org/wiki/Pakistan,The capital city of Pakistan is Islamabad.
+T0102,Pakistan,Currency,Pakistani rupee,source_01,https://en.wikipedia.org/wiki/Pakistan,The currency used in Pakistan is the Pakistani rupee.
+T0103,Pakistan,Largest city,Karachi,source_01,https://en.wikipedia.org/wiki/Pakistan,
+T0104,Pakistan,Continent,Asia,source_01,https://en.wikipedia.org/wiki/Pakistan,
+T0105,Pakistan,Capital,Lahore,source_01,https://en.wikipedia.org/wiki/Pakistan,The capital city of Pakistan is Islamabad.
+T0106,Pakistan,Currency,Indian rupee,source_01,https://en.wikipedia.org/wiki/Pakistan,The currency used in Pakistan is the Pakistani rupee.
+T0107,Pakistan,Most popular food,No objectively established answer,source_01,https://en.wikipedia.org/wiki/Pakistan,
+T0108,Pakistan,Friendliest city,No objectively established answer,source_01,https://en.wikipedia.org/wiki/Pakistan,
+T0201,India,Capital,New Delhi,source_02,https://en.wikipedia.org/wiki/India,The capital city of India is New Delhi.
+T0202,India,Currency,Indian rupee,source_02,https://en.wikipedia.org/wiki/India,The currency used in India is the Indian rupee.
+T0203,India,Largest city,Mumbai,source_02,https://en.wikipedia.org/wiki/India,
+T0204,India,Continent,Asia,source_02,https://en.wikipedia.org/wiki/India,
+T0205,India,Capital,Kolkata,source_02,https://en.wikipedia.org/wiki/India,The capital city of India is New Delhi.
+T0206,India,Currency,Pakistani rupee,source_02,https://en.wikipedia.org/wiki/India,The currency used in India is the Indian rupee.
+T0207,India,Most popular food,No objectively established answer,source_02,https://en.wikipedia.org/wiki/India,
+T0208,India,Friendliest city,No objectively established answer,source_02,https://en.wikipedia.org/wiki/India,
+T0301,China,Capital,Beijing,source_03,https://en.wikipedia.org/wiki/China,The capital city of China is Beijing.
+T0302,China,Currency,renminbi,source_03,https://en.wikipedia.org/wiki/China,The currency used in China is the renminbi.
+T0303,China,Largest city,Shanghai,source_03,https://en.wikipedia.org/wiki/China,
+T0304,China,Continent,Asia,source_03,https://en.wikipedia.org/wiki/China,
+T0305,China,Capital,Tokyo,source_03,https://en.wikipedia.org/wiki/China,The capital city of China is Beijing.
+T0306,China,Currency,Japanese yen,source_03,https://en.wikipedia.org/wiki/China,The currency used in China is the renminbi.
+T0307,China,Most popular food,No objectively established answer,source_03,https://en.wikipedia.org/wiki/China,
+T0308,China,Friendliest city,No objectively established answer,source_03,https://en.wikipedia.org/wiki/China,
+T0401,Japan,Capital,Tokyo,source_04,https://en.wikipedia.org/wiki/Japan,The capital city of Japan is Tokyo.
+T0402,Japan,Currency,Japanese yen,source_04,https://en.wikipedia.org/wiki/Japan,The currency used in Japan is the Japanese yen.
+T0403,Japan,Largest city,Tokyo,source_04,https://en.wikipedia.org/wiki/Japan,
+T0404,Japan,Continent,Asia,source_04,https://en.wikipedia.org/wiki/Japan,
+T0405,Japan,Capital,Osaka,source_04,https://en.wikipedia.org/wiki/Japan,The capital city of Japan is Tokyo.
+T0406,Japan,Currency,Chinese yuan,source_04,https://en.wikipedia.org/wiki/Japan,The currency used in Japan is the Japanese yen.
+T0407,Japan,Most popular food,No objectively established answer,source_04,https://en.wikipedia.org/wiki/Japan,
+T0408,Japan,Friendliest city,No objectively established answer,source_04,https://en.wikipedia.org/wiki/Japan,
+T0501,France,Capital,Paris,source_05,https://en.wikipedia.org/wiki/France,The capital city of France is Paris.
+T0502,France,Currency,euro,source_05,https://en.wikipedia.org/wiki/France,The currency used in France is the euro.
+T0503,France,Largest city,Paris,source_05,https://en.wikipedia.org/wiki/France,
+T0504,France,Continent,Europe,source_05,https://en.wikipedia.org/wiki/France,
+T0505,France,Capital,Lyon,source_05,https://en.wikipedia.org/wiki/France,The capital city of France is Paris.
+T0506,France,Currency,British pound,source_05,https://en.wikipedia.org/wiki/France,The currency used in France is the euro.
+T0507,France,Most popular food,No objectively established answer,source_05,https://en.wikipedia.org/wiki/France,
+T0508,France,Friendliest city,No objectively established answer,source_05,https://en.wikipedia.org/wiki/France,
+T0601,Germany,Capital,Berlin,source_06,https://en.wikipedia.org/wiki/Germany,The capital city of Germany is Berlin.
+T0602,Germany,Currency,euro,source_06,https://en.wikipedia.org/wiki/Germany,The currency used in Germany is the euro.
+T0603,Germany,Largest city,Berlin,source_06,https://en.wikipedia.org/wiki/Germany,
+T0604,Germany,Continent,Europe,source_06,https://en.wikipedia.org/wiki/Germany,
+T0605,Germany,Capital,Hamburg,source_06,https://en.wikipedia.org/wiki/Germany,The capital city of Germany is Berlin.
+T0606,Germany,Currency,Swiss franc,source_06,https://en.wikipedia.org/wiki/Germany,The currency used in Germany is the euro.
+T0607,Germany,Most popular food,No objectively established answer,source_06,https://en.wikipedia.org/wiki/Germany,
+T0608,Germany,Friendliest city,No objectively established answer,source_06,https://en.wikipedia.org/wiki/Germany,
+T0701,Italy,Capital,Rome,source_07,https://en.wikipedia.org/wiki/Italy,The capital city of Italy is Rome.
+T0702,Italy,Currency,euro,source_07,https://en.wikipedia.org/wiki/Italy,The currency used in Italy is the euro.
+T0703,Italy,Largest city,Rome,source_07,https://en.wikipedia.org/wiki/Italy,
+T0704,Italy,Continent,Europe,source_07,https://en.wikipedia.org/wiki/Italy,
+T0705,Italy,Capital,Milan,source_07,https://en.wikipedia.org/wiki/Italy,The capital city of Italy is Rome.
+T0706,Italy,Currency,French franc,source_07,https://en.wikipedia.org/wiki/Italy,The currency used in Italy is the euro.
+T0707,Italy,Most popular food,No objectively established answer,source_07,https://en.wikipedia.org/wiki/Italy,
+T0708,Italy,Friendliest city,No objectively established answer,source_07,https://en.wikipedia.org/wiki/Italy,
+T0801,Canada,Capital,Ottawa,source_08,https://en.wikipedia.org/wiki/Canada,The capital city of Canada is Ottawa.
+T0802,Canada,Currency,Canadian dollar,source_08,https://en.wikipedia.org/wiki/Canada,The currency used in Canada is the Canadian dollar.
+T0803,Canada,Largest city,Toronto,source_08,https://en.wikipedia.org/wiki/Canada,
+T0804,Canada,Continent,North America,source_08,https://en.wikipedia.org/wiki/Canada,
+T0805,Canada,Capital,Montreal,source_08,https://en.wikipedia.org/wiki/Canada,The capital city of Canada is Ottawa.
+T0806,Canada,Currency,US dollar,source_08,https://en.wikipedia.org/wiki/Canada,The currency used in Canada is the Canadian dollar.
+T0807,Canada,Most popular food,No objectively established answer,source_08,https://en.wikipedia.org/wiki/Canada,
+T0808,Canada,Friendliest city,No objectively established answer,source_08,https://en.wikipedia.org/wiki/Canada,
+T0901,Australia,Capital,Canberra,source_09,https://en.wikipedia.org/wiki/Australia,The capital city of Australia is Canberra.
+T0902,Australia,Currency,Australian dollar,source_09,https://en.wikipedia.org/wiki/Australia,The currency used in Australia is the Australian dollar.
+T0903,Australia,Largest city,Sydney,source_09,https://en.wikipedia.org/wiki/Australia,
+T0904,Australia,Continent,Oceania,source_09,https://en.wikipedia.org/wiki/Australia,
+T0905,Australia,Capital,Melbourne,source_09,https://en.wikipedia.org/wiki/Australia,The capital city of Australia is Canberra.
+T0906,Australia,Currency,New Zealand dollar,source_09,https://en.wikipedia.org/wiki/Australia,The currency used in Australia is the Australian dollar.
+T0907,Australia,Most popular food,No objectively established answer,source_09,https://en.wikipedia.org/wiki/Australia,
+T0908,Australia,Friendliest city,No objectively established answer,source_09,https://en.wikipedia.org/wiki/Australia,
+T1001,Brazil,Capital,Brasília,source_10,https://en.wikipedia.org/wiki/Brazil,The capital city of Brazil is Brasília.
+T1002,Brazil,Currency,Brazilian real,source_10,https://en.wikipedia.org/wiki/Brazil,The currency used in Brazil is the Brazilian real.
+T1003,Brazil,Largest city,São Paulo,source_10,https://en.wikipedia.org/wiki/Brazil,
+T1004,Brazil,Continent,South America,source_10,https://en.wikipedia.org/wiki/Brazil,
+T1005,Brazil,Capital,Rio de Janeiro,source_10,https://en.wikipedia.org/wiki/Brazil,The capital city of Brazil is Brasília.
+T1006,Brazil,Currency,Argentine peso,source_10,https://en.wikipedia.org/wiki/Brazil,The currency used in Brazil is the Brazilian real.
+T1007,Brazil,Most popular food,No objectively established answer,source_10,https://en.wikipedia.org/wiki/Brazil,
+T1008,Brazil,Friendliest city,No objectively established answer,source_10,https://en.wikipedia.org/wiki/Brazil,
